@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>WhatsAlvorada</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .box {
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .box-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        button {
+            padding: 10px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #f5f5f5;
+        }
+        
+        button:hover {
+            background: #e5e5e5;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: black;
+        }
+        
+        /* Estilos para Agendamentos */
+        .agendamentos-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .agendamento-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .agendamento-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .agendamento-numero {
+            font-weight: bold;
+            color: #25D366;
+            font-size: 16px;
+        }
+
+        .agendamento-datahora {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .agendamento-mensagem-box {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            line-height: 1.4;
+            margin-bottom: 10px;
+            border-left: 3px solid #25D366;
+        }
+
+        .agendamento-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #888;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .agendamento-index {
+            background: #f1f1f1;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        
+        .status-pendente {
+            background: #ffc107;
+            color: black;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        
+        .status-enviado {
+            background: #28a745;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        
+        /* Estilos para Conversas (Kanban) */
+        .kanban-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .kanban-coluna {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 400px;
+            border: 2px dashed #ddd;
+        }
+
+        .kanban-titulo {
+            text-align: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid;
+            font-weight: bold;
+        }
+
+        .titulo-abertas {
+            color: #25D366;
+            border-bottom-color: #25D366;
+        }
+
+        .titulo-finalizadas {
+            color: #6c757d;
+            border-bottom-color: #6c757d;
+        }
+
+        .conversas-lista {
+            min-height: 300px;
+        }
+
+        .conversa-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: grab;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+
+        .conversa-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .conversa-card:active {
+            cursor: grabbing;
+        }
+
+        .conversa-card.arrastando {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+
+        .conversa-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .conversa-numero {
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .conversa-data {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .conversa-mensagem {
+            font-size: 13px;
+            line-height: 1.3;
+            margin-bottom: 8px;
+            padding: 8px;
+            background: #f1f8e9;
+            border-radius: 4px;
+            border-left: 3px solid #4caf50;
+            max-height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .conversa-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: #888;
+        }
+
+        .conversa-origem {
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .origem-usuario {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .origem-bot {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        /* Área de destino para arrastar */
+        .coluna-destino {
+            border-color: #25D366;
+            background: #f0fff4;
+        }
+
+        /* Estatísticas */
+        .conversas-stats {
+            display: flex;
+            justify-content: space-between;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .stat-numero {
+            font-size: 24px;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* Botão de ver agendamentos */
+        #btnVerAgendamentos {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            margin-top: 15px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #btnVerAgendamentos::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        #btnVerAgendamentos:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.5);
+        }
+
+        #btnVerAgendamentos:hover::before {
+            left: 100%;
+        }
+
+        #btnVerAgendamentos:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+        }
+
+        /* Botão de ver conversas */
+        #btnVerConversas {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            margin-top: 15px;
+            margin-left: 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #btnVerConversas::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        #btnVerConversas:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        #btnVerConversas:hover::before {
+            left: 100%;
+        }
+
+        #btnVerConversas:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Botão de fechar no modal */
+        .btn-fechar {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-fechar:hover {
+    background: #c82333;
+}
+/* CSS para botões do modal de conversas */
+.botoes-modal button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    color: white;
+}
+
+/* Botão Fechar (vermelho) */
+.botoes-modal button:first-child {
+    background: #dc3545;
+}
+
+.botoes-modal button:first-child:hover {
+    background: #c82333;
+}
+
+/* Botão Atualizar (verde) */
+.botoes-modal button:nth-child(2) {
+    background: #25D366;
+}
+
+.botoes-modal button:nth-child(2):hover {
+    background: #1da851;
+}
+
+/* Botão Resetar Estado (cinza) */
+.botoes-modal button:nth-child(3) {
+    background: #6c757d;
+}
+
+.botoes-modal button:nth-child(3):hover {
+    background: #5a6268;
+}
+
+/* Botão Exportar (azul) */
+.botoes-modal button:nth-child(4) {
+    background: #17a2b8;
+}
+
+.botoes-modal button:nth-child(4):hover {
+    background: #138496;
+}
+
+/* Botão Limpar Histórico (vermelho escuro) */
+.botoes-modal button:last-child {
+    background: #c82333;
+}
+
+.botoes-modal button:last-child:hover {
+    background: #bd2130;
+}
+
+.botoes-modal {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}      .filtro-container button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+        
+        .filtro-container input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .filtro-container select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        /* Seção Treinar IA */
+        #promptBox {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        #promptBox h3 {
+            color: #2d3748;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        #prompt {
+            width: 100%;
+            min-height: 150px;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #f7fafc;
+            resize: vertical;
+        }
+
+        #prompt:focus {
+            outline: none;
+            border-color: #25D366;
+            background: white;
+        }
+
+        button[onclick="salvarPrompt()"] {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button[onclick="salvarPrompt()"]:hover {
+            background: #1da851;
+        }
+
+        /* Menu Horizontal */
+        .menu-horizontal {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            padding: 15px 20px;
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-radius: 0 0 15px 15px;
+            margin-bottom: 20px;
+        }
+
+        .menu-btn {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .menu-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        }
+
+        .menu-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Estilos para cards de estatísticas */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+        }
+
+        .stat-icon {
+            font-size: 32px;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+
+        .stat-content {
+            flex: 1;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .agendamentos-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .kanban-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .box-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .menu-horizontal {
+                flex-direction: column;
+            }
+            
+            .menu-btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            #btnVerAgendamentos, 
+            #btnVerConversas {
+                width: 100%;
+                margin-left: 0;
+                margin-top: 10px;
+            }
+        }
+      
+      #agendamentoBox input,
+#agendamentoBox textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+
+#agendamentoBox input:focus,
+#agendamentoBox textarea:focus {
+    outline: none;
+    border-color: #25D366;
+    box-shadow: 0 0 0 2px rgba(37, 211, 102, 0.1);
+}
+
+#agendamentoBox button {
+    width: 100%;
+    padding: 12px;
+    background: #25D366;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#agendamentoBox button:hover {
+    background: #1da851;
+}
+    </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginBox" class="box">
+    <h2>Login</h2>
+    <input type="text" id="usuario" placeholder="Usuário"><br><br>
+    <input type="password" id="senha" placeholder="Senha"><br><br>
+    <button onclick="login()">Entrar</button>
+</div>
+
+<!-- QR CODE -->
+<div id="qrBox" class="box" style="display:none">
+    <h2>Conectar WhatsApp</h2>
+    <div id="qr"></div>
+</div>
+
+<!-- CONTEÚDO PRINCIPAL -->
+<div id="contentContainer" style="display: none;">
+    <!-- MENU HORIZONTAL -->
+    <div class="menu-horizontal">
+        <button class="menu-btn" onclick="abrirModalAgendamentos()">
+            📅 Agendamentos
+        </button>
+        <button class="menu-btn" onclick="abrirModalConversas()">
+            💬 Conversas
+        </button>
+        <button class="menu-btn" onclick="abrirEditorPrompts()">
+            💾Editar Prompts
+        </button>
+    </div>
+
+    <!-- SEÇÃO DE ESTATÍSTICAS -->
+    <div id="statsContainer" class="box">
+        <h3>📊 Estatísticas</h3>
+        <div class="stats-grid">
+            <!-- Card Conversas Abertas -->
+            <div class="stat-card">
+                <div class="stat-icon">🟢</div>
+                <div class="stat-content">
+                    <div class="stat-number" id="statCardAbertas">0</div>
+                    <div class="stat-label">Conversas Abertas</div>
+                </div>
+            </div>
+            
+            <!-- Card Conversas Finalizadas -->
+            <div class="stat-card">
+                <div class="stat-icon">🔴</div>
+                <div class="stat-content">
+                    <div class="stat-number" id="statCardFinalizadas">0</div>
+                    <div class="stat-label">Conversas Finalizadas</div>
+                </div>
+            </div>
+            
+            <!-- Card Mensagens Agendadas -->
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-content">
+                    <div class="stat-number" id="statCardAgendadas">0</div>
+                    <div class="stat-label">Mensagens Agendadas</div>
+                </div>
+            </div>
+            
+            <!-- Card Mensagens Enviadas -->
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-content">
+                    <div class="stat-number" id="statCardEnviadas">0</div>
+                    <div class="stat-label">Mensagens Enviadas</div>
+                </div>
+            </div>
+        </div>
+        
+        <button onclick="atualizarEstatisticasCards()" style="margin-top: 15px; width: 100%;">
+            🔄 Atualizar Estatísticas
+        </button>
+    </div>
+
+    <div class="box-container">
+        <!-- TREINAR IA -->
+        <div id="promptBox" class="box">
+            <h3>Treinar IA</h3>
+            <textarea id="prompt" rows="8" placeholder="Digite o prompt para treinar a IA..."></textarea><br><br>
+            <button onclick="salvarPrompt()">💾 Salvar Prompt</button>
+        </div>
+
+        <!-- AGENDAMENTO -->
+        <div id="agendamentoBox" class="box">
+            <h3>Agendar Mensagem</h3>
+
+  <!-- Opção para upload de arquivo -->
+    <div style="margin-bottom: 15px;">
+        <label style="display: block; margin-bottom: 8px; font-weight: bold;">
+            📄 Enviar arquivo TXT com números (opcional)
+        </label>
+        <input type="file" id="arquivoNumeros" accept=".txt" style="width: 100%; padding: 8px;">
+        <small style="color: #666; font-size: 12px;">
+            Arquivo deve conter um número por linha
+        </small>
+    </div>
+            <input type="text" id="numero" placeholder="Número com DDD (ex: 5511999999999)"><br><br>
+            <textarea id="mensagem" rows="5" placeholder="Digite sua mensagem aqui..."></textarea><br><br>
+            <input type="datetime-local" id="data"><br><br>
+            <button onclick="agendar()">Agendar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL PARA VER AGENDAMENTOS -->
+<div id="modalAgendamentos" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="fecharModalAgendamentos()">&times;</span>
+        <h2>Mensagens Agendadas</h2>
+        
+        <div id="modalAgendamentosLoading">
+            <p>Carregando agendamentos...</p>
+        </div>
+        
+        <div id="modalAgendamentosContent" style="display:none;">
+            <div id="semAgendamentos" style="display:none;">
+                <p>Nenhuma mensagem agendada encontrada.</p>
+            </div>
+            
+            <div id="listaAgendamentos"></div>
+            
+            <div class="botoes-modal">
+                <button class="btn-fechar" onclick="fecharModalAgendamentos()">Fechar</button>
+                <button onclick="carregarAgendamentos()">Atualizar Lista</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL PARA VER CONVERSAS -->
+<div id="modalConversas" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="fecharModalConversas()">&times;</span>
+        <h2>Gerenciador de Conversas</h2>
+        
+        <!-- Filtros -->
+        <div class="filtro-container">
+            <input type="text" id="filtroNumero" placeholder="Filtrar por número...">
+            <select id="filtroLimite">
+                <option value="20">Últimas 20</option>
+                <option value="50" selected>Últimas 50</option>
+                <option value="100">Últimas 100</option>
+            </select>
+            <button onclick="carregarConversas()">Filtrar</button>
+            <button onclick="limparFiltrosConversas()">Limpar</button>
+        </div>
+        
+        <!-- Estatísticas -->
+        <div id="conversasStats" class="conversas-stats" style="display: none;">
+            <div class="stat-item">
+                <span class="stat-numero" id="statTotal">0</span>
+                <span class="stat-label">Total</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-numero" id="statAbertas">0</span>
+                <span class="stat-label">Abertas</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-numero" id="statFinalizadas">0</span>
+                <span class="stat-label">Finalizadas</span>
+            </div>
+        </div>
+        
+        <div id="modalConversasLoading">
+            <p>Carregando conversas...</p>
+        </div>
+        
+        <div id="modalConversasContent" style="display:none;">
+            <div id="semConversas" style="display:none;">
+                <p>Nenhuma conversa encontrada.</p>
+            </div>
+            
+            <!-- KANBAN -->
+            <div class="kanban-container">
+                <!-- Coluna Abertas -->
+                <div class="kanban-coluna" id="colunaAbertas" 
+                     ondrop="soltarConversa(event)" 
+                     ondragover="permitirSoltar(event)">
+                    <div class="kanban-titulo titulo-abertas">
+                        🟢 CONVERSAS ABERTAS
+                    </div>
+                    <div class="conversas-lista" id="listaAbertas">
+                        <!-- Conversas abertas serão inseridas aqui -->
+                    </div>
+                </div>
+                
+                <!-- Coluna Finalizadas -->
+                <div class="kanban-coluna" id="colunaFinalizadas" 
+                     ondrop="soltarConversa(event)" 
+                     ondragover="permitirSoltar(event)">
+                    <div class="kanban-titulo titulo-finalizadas">
+                        🔴 CONVERSAS FINALIZADAS
+                    </div>
+                    <div class="conversas-lista" id="listaFinalizadas">
+                        <!-- Conversas finalizadas serão inseridas aqui -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Botões de Ação -->
+            <div class="botoes-modal">
+                <button class="btn-fechar" onclick="fecharModalConversas()">Fechar</button>
+                <button onclick="carregarConversas()">Atualizar</button>
+                <button onclick="limparEstadoConversas()" style="background: #6c757d;">Resetar Estado</button>
+                <button onclick="exportarConversas()" style="background: #17a2b8;">Exportar</button>
+                <button onclick="limparConversas()" style="background: #dc3545;">Limpar Histórico</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const socket = io();
+
+
+  /* ======================
+   AUTO LOGIN
+====================== */
+
+socket.on('connect', () => {
+    const sessao = localStorage.getItem('sessao_whats');
+    if (sessao) {
+        const { token } = JSON.parse(sessao);
+        socket.emit('validar_sessao', token);
+    }
+});
+
+function abrirEditorPrompts() {
+    window.open('prompts.html', '_blank', 'width=1200,height=700');
+}
+
+/* ======================
+   LOGIN
+====================== */
+function login() {
+    const usuario = document.getElementById('usuario').value;
+    const senha = document.getElementById('senha').value;
+    
+    socket.emit('login', {
+        usuario: usuario,
+        senha: senha
+    });
+}
+
+socket.on('login_ok', (dados) => {
+    // Salvar sessão
+    localStorage.setItem('sessao_whats', JSON.stringify(dados));
+    
+    // Mostrar QR Code
+    document.getElementById('loginBox').style.display = 'none';
+    document.getElementById('qrBox').style.display = 'block';
+});
+
+socket.on('sessao_valida', () => {
+    document.getElementById('loginBox').style.display = 'none';
+    document.getElementById('qrBox').style.display = 'block';
+});
+
+socket.on('login_erro', (msg) => {
+    alert('Erro de login: ' + msg);
+});
+
+/* ======================
+   WHATSAPP
+====================== */
+socket.on('qr', (qr) => {
+    document.getElementById('qr').innerHTML = `<img src="${qr}">`;
+});
+
+socket.on('ready', () => {
+    // Quando WhatsApp estiver pronto, mostrar conteúdo principal
+    document.getElementById('qrBox').style.display = 'none';
+    document.getElementById('contentContainer').style.display = 'block';
+    
+    // Carregar estatísticas iniciais
+    carregarEstatisticasCards();
+});
+
+/* ======================
+   PROMPT
+====================== */
+function salvarPrompt() {
+    const prompt = document.getElementById('prompt').value.trim();
+    if (!prompt) {
+        alert('Digite um prompt para salvar!');
+        return;
+    }
+    
+    socket.emit('salvar_prompt', { prompt: prompt });
+}
+
+socket.on('prompt_salvo', () => {
+    alert('Prompt salvo com sucesso!');
+    document.getElementById('prompt').value = '';
+});
+
+socket.on('prompt_erro', (erro) => {
+    alert('Erro ao salvar prompt: ' + erro);
+});
+
+
+/* ======================
+   AGENDAMENTO PARA MÚLTIPLOS NÚMEROS (MANUAL OU ARQUIVO)
+====================== */
+
+function agendar() {
+    const arquivoInput = document.getElementById('arquivoNumeros');
+    const numerosInput = document.getElementById('numero').value.trim();
+    const mensagem = document.getElementById('mensagem').value.trim();
+    const dataCompleta = document.getElementById('data').value;
+
+    // Validações básicas
+    if (!mensagem || !dataCompleta) {
+        alert('Preencha a mensagem e data/hora!');
+        return;
+    }
+
+    // Verificar se foi fornecido arquivo OU números manuais
+    const arquivo = arquivoInput.files[0];
+    
+    if (!arquivo && !numerosInput) {
+        alert('Forneça números manualmente OU selecione um arquivo TXT!');
+        return;
+    }
+
+    // Processar números (do arquivo ou do campo manual)
+    processarNumeros(arquivo, numerosInput)
+        .then(numerosArray => {
+            if (numerosArray.length === 0) {
+                alert('Nenhum número válido encontrado!');
+                return;
+            }
+
+           // Validar cada número - VERSÃO CORRIGIDA
+for (let i = 0; i < numerosArray.length; i++) {
+    // REMOVER VÍRGULAS, ESPAÇOS, PONTOS, TRAÇOS, PARÊNTESES
+    numerosArray[i] = numerosArray[i].replace(/\D/g, '');
+    
+    // Agora validar se tem apenas números
+    if (!/^\d+$/.test(numerosArray[i])) {
+        alert(`Número inválido: ${numerosArray[i]}\nUse apenas dígitos.`);
+        return;
+    }
+}
+            // Agendar para cada número
+            const [data, hora] = dataCompleta.split('T');
+            
+            numerosArray.forEach(numero => {
+                socket.emit('agendar_mensagem', {
+                    numero: numero,
+                    mensagem: mensagem,
+                    data: data,
+                    hora: hora
+                });
+            });
+
+            // Feedback ao usuário
+            alert(`✅ Mensagem agendada para ${numerosArray.length} número(s)!`);
+            
+            // Limpar campos
+            document.getElementById('numero').value = '';
+            document.getElementById('mensagem').value = '';
+            document.getElementById('data').value = '';
+            arquivoInput.value = '';
+            
+            // Atualizar estatísticas
+            carregarEstatisticasCards();
+        })
+        .catch(error => {
+            alert('Erro ao processar números: ' + error.message);
+        });
+}
+
+// Função para processar números (arquivo ou manual)
+function processarNumeros(arquivo, numerosInput) {
+    return new Promise((resolve, reject) => {
+        let numerosArray = [];
+
+        if (arquivo) {
+            // Processar arquivo TXT
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    const conteudo = e.target.result;
+                    // Processar cada linha do arquivo
+                    numerosArray = conteudo
+                        .split('\n') // Separar por linha
+                        .map(num => num.trim())
+                        .filter(num => {
+                            // Remover linhas vazias, comentários, etc
+                            return num !== '' && 
+                                   !num.startsWith('#') && 
+                                   !num.startsWith('//') &&
+                                   num.length >= 10; // Número deve ter pelo menos 10 dígitos
+                        });
+                    resolve(numerosArray);
+                } catch (error) {
+                    reject(error);
+                }
+            };
+            
+            reader.onerror = function() {
+                reject(new Error('Erro ao ler arquivo'));
+            };
+            
+            reader.readAsText(arquivo);
+        } else {
+            // Processar números manuais
+            numerosArray = numerosInput
+                .split(/[,;\n\s]+/) // Separar por vírgula, ponto-vírgula, quebra de linha ou espaço
+                .map(num => num.trim())
+                .filter(num => num !== '');
+            resolve(numerosArray);
+        }
+    });
+}
+
+/* ======================
+   ESTATÍSTICAS - CARDS NA TELA
+====================== */
+
+// Carregar todas as estatísticas
+function carregarEstatisticasCards() {
+    // Atualizar estatísticas de conversas
+    socket.emit('listar_conversas', {
+        filtroNumero: '',
+        limite: '1000',
+        modo: 'todas'
+    });
+    
+    // Atualizar estatísticas de agendamentos
+    socket.emit('listar_agendamentos');
+}
+
+// Atualizar estatísticas manualmente
+function atualizarEstatisticasCards() {
+    // Mostrar loading nos cards
+    document.querySelectorAll('.stat-number').forEach(el => {
+        el.textContent = '...';
+    });
+    
+    carregarEstatisticasCards();
+    
+    // Feedback visual
+    const btn = event.target;
+    const originalText = btn.textContent;
+    btn.textContent = '🔄 Atualizando...';
+    btn.disabled = true;
+    
+    setTimeout(() => {
+        btn.textContent = originalText;
+        btn.disabled = false;
+    }, 1500);
+}
+
+// Receber lista de conversas e atualizar cards
+socket.on('conversas_lista', (data) => {
+    if (data && data.conversas) {
+        let abertas = 0;
+        let finalizadas = 0;
+        
+        // Usar o estado salvo para contar abertas vs finalizadas
+        const estadoSalvo = localStorage.getItem('estado_conversas');
+        if (estadoSalvo) {
+            try {
+                const estado = JSON.parse(estadoSalvo);
+                if (estado.finalizadasIds && Array.isArray(estado.finalizadasIds)) {
+                    finalizadas = estado.finalizadasIds.length;
+                }
+                abertas = data.conversas.length - finalizadas;
+            } catch (e) {
+                // Em caso de erro, contar com base nos dados
+                data.conversas.forEach(conversa => {
+                    if (conversa.status === 'finalizada' || conversa.finalizada) {
+                        finalizadas++;
+                    } else {
+                        abertas++;
+                    }
+                });
+            }
+        } else {
+            // Sem estado salvo, contar com base nos dados
+            data.conversas.forEach(conversa => {
+                if (conversa.status === 'finalizada' || conversa.finalizada) {
+                    finalizadas++;
+                } else {
+                    abertas++;
+                }
+            });
+        }
+        
+        // Atualizar cards
+        document.getElementById('statCardAbertas').textContent = abertas;
+        document.getElementById('statCardFinalizadas').textContent = finalizadas;
+    }
+});
+
+// Receber lista de agendamentos e atualizar cards
+socket.on('agendamentos_lista', (agendamentos) => {
+    if (agendamentos && Array.isArray(agendamentos)) {
+        let totalAgendadas = agendamentos.length;
+        let totalEnviadas = 0;
+        
+        agendamentos.forEach(agendamento => {
+            if (agendamento.status === 'enviado') {
+                totalEnviadas++;
+            }
+        });
+        
+        // Atualizar cards
+        document.getElementById('statCardAgendadas').textContent = totalAgendadas;
+        document.getElementById('statCardEnviadas').textContent = totalEnviadas;
+    } else {
+        // Se não houver agendamentos
+        document.getElementById('statCardAgendadas').textContent = 0;
+        document.getElementById('statCardEnviadas').textContent = 0;
+    }
+});
+
+/* ======================
+   AGENDAMENTOS - MODAL
+====================== */
+
+// Abrir modal de agendamentos
+function abrirModalAgendamentos() {
+    document.getElementById('modalAgendamentos').style.display = 'block';
+    carregarAgendamentos();
+}
+
+// Fechar modal de agendamentos
+function fecharModalAgendamentos() {
+    document.getElementById('modalAgendamentos').style.display = 'none';
+}
+
+// Carregar lista de agendamentos
+function carregarAgendamentos() {
+    // Mostrar loading
+    document.getElementById('modalAgendamentosLoading').style.display = 'block';
+    document.getElementById('modalAgendamentosContent').style.display = 'none';
+    
+    // Solicitar lista de agendamentos
+    socket.emit('listar_agendamentos');
+}
+
+// Receber lista de agendamentos
+socket.on('agendamentos_lista', (agendamentos) => {
+    // Esconder loading
+    document.getElementById('modalAgendamentosLoading').style.display = 'none';
+    document.getElementById('modalAgendamentosContent').style.display = 'block';
+    
+    const listaAgendamentos = document.getElementById('listaAgendamentos');
+    const semAgendamentos = document.getElementById('semAgendamentos');
+    
+    // Limpar lista
+    listaAgendamentos.innerHTML = '';
+    
+    if (!agendamentos || agendamentos.length === 0) {
+        semAgendamentos.style.display = 'block';
+        return;
+    }
+    
+    semAgendamentos.style.display = 'none';
+    
+    // Criar container para os cards
+    const container = document.createElement('div');
+    container.className = 'agendamentos-container';
+    
+    // Adicionar cada agendamento como card
+    agendamentos.forEach((agendamento, index) => {
+        const dataHora = `${agendamento.data || 'Data não informada'} às ${agendamento.hora || 'Hora não informada'}`;
+        const status = agendamento.status || 'pendente';
+        const statusClass = status === 'enviado' ? 'status-enviado' : 'status-pendente';
+        const statusText = status === 'enviado' ? 'Enviado' : 'Pendente';
+        
+        // Limitar mensagem para preview
+        let mensagemPreview = agendamento.mensagem || 'Sem mensagem';
+        if (mensagemPreview.length > 150) {
+            mensagemPreview = mensagemPreview.substring(0, 150) + '...';
+        }
+        
+        const card = document.createElement('div');
+        card.className = 'agendamento-card';
+        card.innerHTML = `
+            <div class="agendamento-header">
+                <div class="agendamento-numero">
+                    📱 ${agendamento.numero || 'Número não informado'}
+                </div>
+                <span class="${statusClass}">${statusText}</span>
+            </div>
+            
+            <div class="agendamento-datahora">
+                📅 ${dataHora}
+            </div>
+            
+            <div class="agendamento-mensagem-box">
+                ${mensagemPreview}
+            </div>
+            
+            <div class="agendamento-footer">
+                <div class="agendamento-index">
+                    #${index + 1}
+                </div>
+                <div style="font-size: 11px; color: #666;">
+                    📄 ${agendamento.arquivo || 'arquivo.txt'}
+                </div>
+            </div>
+        `;
+        
+        container.appendChild(card);
+    });
+    
+    listaAgendamentos.appendChild(container);
+});
+
+socket.on('agendamentos_erro', (erro) => {
+    // Esconder loading
+    document.getElementById('modalAgendamentosLoading').style.display = 'none';
+    document.getElementById('modalAgendamentosContent').style.display = 'block';
+    
+    document.getElementById('listaAgendamentos').innerHTML = 
+        `<p style="color: red; padding: 20px; text-align: center;">Erro ao carregar agendamentos: ${erro}</p>`;
+});
+
+/* ======================
+   CONVERSAS - MODAL (KANBAN COM DRAG AND DROP PERSISTENTE)
+====================== */
+
+// Variáveis para gerenciar conversas
+let todasConversas = [];
+let conversasAbertas = [];
+let conversasFinalizadas = [];
+let conversaArrastrada = null;
+
+// Abrir modal de conversas
+function abrirModalConversas() {
+    document.getElementById('modalConversas').style.display = 'block';
+    carregarConversas();
+}
+
+// Fechar modal de conversas
+function fecharModalConversas() {
+    document.getElementById('modalConversas').style.display = 'none';
+}
+
+// Carregar lista de conversas
+function carregarConversas() {
+    // Mostrar loading
+    document.getElementById('modalConversasLoading').style.display = 'block';
+    document.getElementById('modalConversasContent').style.display = 'none';
+    document.getElementById('conversasStats').style.display = 'none';
+    
+    // Obter filtros
+    const filtroNumero = document.getElementById('filtroNumero').value;
+    const limite = document.getElementById('filtroLimite').value;
+    
+    // Solicitar lista de conversas
+    socket.emit('listar_conversas', {
+        filtroNumero: filtroNumero,
+        limite: limite,
+        modo: 'todas'
+    });
+}
+
+// Limpar filtros de conversas
+function limparFiltrosConversas() {
+    document.getElementById('filtroNumero').value = '';
+    document.getElementById('filtroLimite').value = '50';
+    carregarConversas();
+}
+
+// Receber lista de conversas
+socket.on('conversas_lista', (data) => {
+    const { conversas } = data;
+    
+    // Salvar conversas globalmente
+    todasConversas = conversas;
+    
+    // Esconder loading
+    document.getElementById('modalConversasLoading').style.display = 'none';
+    document.getElementById('modalConversasContent').style.display = 'block';
+    document.getElementById('conversasStats').style.display = 'flex';
+    
+    const semConversas = document.getElementById('semConversas');
+    
+    if (!conversas || conversas.length === 0) {
+        semConversas.style.display = 'block';
+        document.getElementById('conversasStats').style.display = 'none';
+        document.getElementById('listaAbertas').innerHTML = '';
+        document.getElementById('listaFinalizadas').innerHTML = '';
+        return;
+    }
+    
+    semConversas.style.display = 'none';
+    
+    // Aplicar estado salvo ou começar com todas abertas
+    aplicarEstadoSalvo(conversas);
+    
+    // Atualizar estatísticas
+    atualizarEstatisticas();
+    
+    // Renderizar conversas
+    renderizarConversas();
+});
+
+// Função para gerar ID único baseado nos dados da conversa
+function gerarIdConversa(conversa) {
+    // Usar múltiplos campos para criar um ID único
+    const str = `${conversa.numero || ''}-${conversa.dataHora || ''}-${conversa.mensagem || conversa.mensagemUsuario || conversa.respostaBot || ''}`;
+    
+    // Criar um hash simples
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+    return Math.abs(hash).toString();
+}
+
+// Aplicar estado salvo do localStorage
+function aplicarEstadoSalvo(conversas) {
+    const estadoSalvo = localStorage.getItem('estado_conversas');
+    
+    // Inicializar arrays vazios
+    conversasAbertas = [];
+    conversasFinalizadas = [];
+    
+    if (!estadoSalvo) {
+        // Sem estado salvo, todas começam como abertas
+        conversasAbertas = [...conversas];
+        return;
+    }
+    
+    try {
+        const estado = JSON.parse(estadoSalvo);
+        
+        // Verificar se o estado não é muito antigo (menos de 7 dias)
+        const estadoData = new Date(estado.timestamp);
+        const agora = new Date();
+        const diasDiff = (agora - estadoData) / (1000 * 60 * 60 * 24);
+        
+        if (diasDiff > 7) {
+            // Estado muito antigo, começar do zero
+            conversasAbertas = [...conversas];
+            localStorage.removeItem('estado_conversas');
+            return;
+        }
+        
+        // Mapear conversas por ID
+        const conversasPorId = {};
+        conversas.forEach(conv => {
+            const id = gerarIdConversa(conv);
+            conversasPorId[id] = conv;
+        });
+        
+        // Recuperar abertas
+        if (estado.abertasIds && Array.isArray(estado.abertasIds)) {
+            estado.abertasIds.forEach(id => {
+                if (conversasPorId[id]) {
+                    conversasAbertas.push(conversasPorId[id]);
+                    delete conversasPorId[id];
+                }
+            });
+        }
+        
+        // Recuperar finalizadas
+        if (estado.finalizadasIds && Array.isArray(estado.finalizadasIds)) {
+            estado.finalizadasIds.forEach(id => {
+                if (conversasPorId[id]) {
+                    conversasFinalizadas.push(conversasPorId[id]);
+                    delete conversasPorId[id];
+                }
+            });
+        }
+        
+        // Qualquer conversa nova (não no estado salvo) vai para abertas
+        Object.values(conversasPorId).forEach(conv => {
+            conversasAbertas.push(conv);
+        });
+        
+    } catch (e) {
+        console.error('Erro ao carregar estado:', e);
+        // Em caso de erro, começar com todas abertas
+        conversasAbertas = [...conversas];
+        localStorage.removeItem('estado_conversas');
+    }
+}
+
+// Atualizar estatísticas
+function atualizarEstatisticas() {
+    document.getElementById('statTotal').textContent = todasConversas.length;
+    document.getElementById('statAbertas').textContent = conversasAbertas.length;
+    document.getElementById('statFinalizadas').textContent = conversasFinalizadas.length;
+}
+
+// Renderizar conversas nas colunas
+function renderizarConversas() {
+    const listaAbertas = document.getElementById('listaAbertas');
+    const listaFinalizadas = document.getElementById('listaFinalizadas');
+    
+    // Limpar listas
+    listaAbertas.innerHTML = '';
+    listaFinalizadas.innerHTML = '';
+    
+    // Renderizar conversas abertas
+    conversasAbertas.forEach((conversa, index) => {
+        listaAbertas.appendChild(criarCardConversa(conversa, index, 'aberta'));
+    });
+    
+    // Renderizar conversas finalizadas
+    conversasFinalizadas.forEach((conversa, index) => {
+        listaFinalizadas.appendChild(criarCardConversa(conversa, index, 'finalizada'));
+    });
+}
+
+// Criar card de conversa
+function criarCardConversa(conversa, index, status) {
+    const dataFormatada = conversa.dataFormatada || 
+        new Date(conversa.dataHora).toLocaleString('pt-BR');
+    
+    const card = document.createElement('div');
+    card.className = 'conversa-card';
+    card.draggable = true;
+    
+    // Criar ID único
+    const conversaId = gerarIdConversa(conversa);
+    card.dataset.id = conversaId;
+    card.dataset.status = status;
+    
+    card.ondragstart = iniciarArrastar;
+    
+    const origemClass = conversa.autor === 'usuario' ? 'origem-usuario' : 'origem-bot';
+    const origemText = conversa.autor === 'usuario' ? '👤 Usuário' : '🤖 Bot';
+    
+    // Limitar mensagem
+    let mensagem = conversa.mensagem || conversa.mensagemUsuario || conversa.respostaBot || 'Sem conteúdo';
+    if (mensagem.length > 100) {
+        mensagem = mensagem.substring(0, 100) + '...';
+    }
+    
+    card.innerHTML = `
+        <div class="conversa-header">
+            <div class="conversa-numero">
+                ${conversa.numero || 'Sem número'}
+            </div>
+            <div class="conversa-data">
+                ${dataFormatada.split(' ')[0]}
+            </div>
+        </div>
+        
+        <div class="conversa-mensagem">
+            ${mensagem}
+        </div>
+        
+        <div class="conversa-footer">
+            <div class="conversa-origem ${origemClass}">
+                ${origemText}
+            </div>
+            <div style="font-size: 10px;">
+                ${status === 'aberta' ? '🟢 Aberta' : '🔴 Finalizada'}
+            </div>
+        </div>
+    `;
+    
+    return card;
+}
+
+/* ======================
+   DRAG AND DROP
+====================== */
+
+function iniciarArrastar(event) {
+    conversaArrastrada = event.target;
+    event.target.classList.add('arrastando');
+    event.dataTransfer.setData('text/plain', event.target.dataset.id);
+}
+
+function permitirSoltar(event) {
+    event.preventDefault();
+    event.currentTarget.classList.add('coluna-destino');
+}
+
+function soltarConversa(event) {
+    event.preventDefault();
+    event.currentTarget.classList.remove('coluna-destino');
+    
+    if (!conversaArrastrada) return;
+    
+    const conversaId = conversaArrastrada.dataset.id;
+    const colunaDestino = event.currentTarget.id;
+    
+    // Remover classe de arrastando
+    conversaArrastrada.classList.remove('arrastando');
+    
+    // Encontrar a conversa nas listas
+    if (colunaDestino === 'colunaAbertas') {
+        // Movendo PARA abertas
+        const indexFinalizadas = conversasFinalizadas.findIndex(c => 
+            gerarIdConversa(c) === conversaId
+        );
+        
+        if (indexFinalizadas !== -1) {
+            const [conversaMovida] = conversasFinalizadas.splice(indexFinalizadas, 1);
+            conversasAbertas.push(conversaMovida);
+        }
+    } else if (colunaDestino === 'colunaFinalizadas') {
+        // Movendo PARA finalizadas
+        const indexAbertas = conversasAbertas.findIndex(c => 
+            gerarIdConversa(c) === conversaId
+        );
+        
+        if (indexAbertas !== -1) {
+            const [conversaMovida] = conversasAbertas.splice(indexAbertas, 1);
+            conversasFinalizadas.push(conversaMovida);
+        }
+    }
+    
+    // Atualizar interface
+    atualizarEstatisticas();
+    renderizarConversas();
+    
+    // Salvar estado
+    salvarEstadoConversas();
+    
+    // Atualizar cards de estatísticas na tela principal
+    document.getElementById('statCardAbertas').textContent = conversasAbertas.length;
+    document.getElementById('statCardFinalizadas').textContent = conversasFinalizadas.length;
+    
+    conversaArrastrada = null;
+}
+
+// Salvar estado no localStorage
+function salvarEstadoConversas() {
+    const abertasIds = conversasAbertas.map(c => gerarIdConversa(c));
+    const finalizadasIds = conversasFinalizadas.map(c => gerarIdConversa(c));
+    
+    const estado = {
+        abertasIds: abertasIds,
+        finalizadasIds: finalizadasIds,
+        timestamp: new Date().toISOString()
+    };
+    
+    localStorage.setItem('estado_conversas', JSON.stringify(estado));
+}
+
+// Limpar estado das conversas
+function limparEstadoConversas() {
+    if (confirm('Isso irá resetar todas as conversas para "Abertas" e remover o estado salvo. Continuar?')) {
+        localStorage.removeItem('estado_conversas');
+        conversasAbertas = [...todasConversas];
+        conversasFinalizadas = [];
+        atualizarEstatisticas();
+        renderizarConversas();
+        
+        // Atualizar cards de estatísticas
+        document.getElementById('statCardAbertas').textContent = conversasAbertas.length;
+        document.getElementById('statCardFinalizadas').textContent = 0;
+        
+        alert('Estado das conversas resetado!');
+    }
+}
+
+// Erro ao carregar conversas
+socket.on('conversas_erro', (erro) => {
+    document.getElementById('modalConversasLoading').style.display = 'none';
+    document.getElementById('modalConversasContent').style.display = 'block';
+    
+    document.getElementById('semConversas').style.display = 'block';
+    document.getElementById('semConversas').innerHTML = 
+        `<p style="color: red; padding: 20px; text-align: center;">Erro ao carregar conversas: ${erro}</p>`;
+});
+
+// Exportar conversas
+function exportarConversas() {
+    const filtroNumero = document.getElementById('filtroNumero').value;
+    const limite = document.getElementById('filtroLimite').value;
+    
+    socket.emit('exportar_conversas', { filtroNumero, limite }, (dados) => {
+        if (dados && dados.conversas && dados.conversas.length > 0) {
+            // Criar conteúdo para exportação
+            let conteudo = '=== HISTÓRICO DE CONVERSAS ===\n\n';
+            dados.conversas.forEach((conv, index) => {
+                conteudo += `CONVERSA #${index + 1}\n`;
+                conteudo += `Data: ${conv.dataFormatada || conv.dataHora}\n`;
+                conteudo += `Número: ${conv.numero}\n`;
+                conteudo += `Origem: ${conv.origem || conv.autor}\n`;
+                conteudo += `Tipo: ${conv.tipo}\n`;
+                conteudo += `Mensagem: ${conv.mensagem || conv.mensagemUsuario || conv.respostaBot}\n`;
+                conteudo += '─'.repeat(50) + '\n\n';
+            });
+            
+            // Criar arquivo para download
+            const blob = new Blob([conteudo], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `conversas_${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert(`✅ ${dados.conversas.length} conversas exportadas com sucesso!`);
+        } else {
+            alert('❌ Nenhuma conversa para exportar.');
+        }
+    });
+}
+
+// Limpar histórico de conversas
+function limparConversas() {
+    if (confirm('⚠️ ATENÇÃO!\n\nIsso apagará TODAS as conversas salvas no servidor.\n\nTem certeza que deseja continuar?')) {
+        socket.emit('limpar_conversas');
+    }
+}
+
+// Confirmação de limpeza de conversas
+socket.on('conversas_limpas', () => {
+    alert('✅ Histórico de conversas limpo com sucesso!');
+    localStorage.removeItem('estado_conversas');
+    carregarConversas();
+    
+    // Atualizar cards de estatísticas
+    document.getElementById('statCardAbertas').textContent = 0;
+    document.getElementById('statCardFinalizadas').textContent = 0;
+});
+
+/* ======================
+   FECHAR MODAL AO CLICAR FORA
+====================== */
+window.onclick = function(event) {
+    const modalAgendamentos = document.getElementById('modalAgendamentos');
+    const modalConversas = document.getElementById('modalConversas');
+    
+    if (event.target == modalAgendamentos) {
+        fecharModalAgendamentos();
+    }
+    if (event.target == modalConversas) {
+        fecharModalConversas();
+    }
+}
+
+</script>
+</body>
+</html>

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Editor de Prompts</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f0f2f5; padding: 20px; }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 { color: #25D366; margin-bottom: 20px; text-align: center; }
+        
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .status.conectado { background: #d4edda; color: #155724; }
+        .status.erro { background: #f8d7da; color: #721c24; }
+        
+        .sidebar {
+            width: 250px;
+            float: left;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-right: 20px;
+        }
+        
+        .arquivo-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .arquivo-item:hover {
+            background: #e9ecef;
+            border-color: #25D366;
+        }
+        
+        .arquivo-item.ativo {
+            background: #d1f7c4;
+            border-color: #25D366;
+            font-weight: bold;
+        }
+        
+        .editor {
+            margin-left: 270px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 400px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+        }
+        
+        textarea:focus {
+            border-color: #25D366;
+            outline: none;
+        }
+        
+        .botoes {
+            margin-top: 15px;
+            text-align: right;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .btn-salvar {
+            background: #25D366;
+            color: white;
+        }
+        
+        .btn-voltar {
+            background: #6c757d;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 Editor de Prompts</h1>
+        
+        <div id="status" class="status">
+            Conectando ao servidor...
+        </div>
+        
+        <div class="sidebar">
+            <h3>📂 Arquivos</h3>
+            <div id="listaArquivos">
+                <p>Carregando arquivos...</p>
+            </div>
+            <button onclick="recarregarArquivos()" style="width:100%; margin-top:10px;">
+                🔄 Atualizar Lista
+            </button>
+        </div>
+        
+        <div class="editor">
+            <h3 id="nomeArquivo">Selecione um arquivo</h3>
+            <textarea id="editorTexto" placeholder="Selecione um arquivo para editar..."></textarea>
+            
+            <div class="botoes">
+                <button class="btn-voltar" onclick="window.close()">← Voltar</button>
+                <button class="btn-salvar" onclick="salvarArquivo()">💾 Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        let arquivoAtual = null;
+        
+        // ======================
+        // CONEXÃO E LOGIN
+        // ======================
+        socket.on('connect', () => {
+            console.log('✅ Conectado ao servidor');
+            atualizarStatus('Conectado ao servidor', 'conectado');
+            
+            // Tentar login automático com sessão salva
+            const sessao = localStorage.getItem('sessao_whats');
+            if (sessao) {
+                try {
+                    const { token } = JSON.parse(sessao);
+                    socket.emit('validar_sessao', token);
+                } catch (e) {
+                    fazerLoginManual();
+                }
+            } else {
+                fazerLoginManual();
+            }
+        });
+        
+        function fazerLoginManual() {
+            // Login automático com credenciais padrão
+            socket.emit('login', {
+                usuario: 'admin',
+                senha: 'admin123'
+            });
+        }
+        
+        socket.on('login_ok', (dados) => {
+            console.log('✅ Login bem-sucedido');
+            localStorage.setItem('sessao_whats', JSON.stringify(dados));
+            carregarArquivos();
+        });
+        
+        socket.on('sessao_valida', () => {
+            console.log('✅ Sessão válida');
+            carregarArquivos();
+        });
+        
+        socket.on('login_erro', (msg) => {
+            console.error('❌ Erro de login:', msg);
+            atualizarStatus('Erro de autenticação: ' + msg, 'erro');
+            
+            // Tentar login automático novamente
+            setTimeout(fazerLoginManual, 2000);
+        });
+        
+        // ======================
+        // FUNÇÕES PRINCIPAIS
+        // ======================
+        function carregarArquivos() {
+            atualizarStatus('Carregando arquivos...', 'conectado');
+            socket.emit('listar_arquivos_prompts');
+        }
+        
+        function recarregarArquivos() {
+            carregarArquivos();
+        }
+        
+        socket.on('arquivos_lista', (arquivos) => {
+            console.log('📁 Arquivos recebidos:', arquivos);
+            
+            if (!arquivos || arquivos.length === 0) {
+                document.getElementById('listaArquivos').innerHTML = 
+                    '<p>Nenhum arquivo encontrado</p>';
+                return;
+            }
+            
+            let html = '';
+            arquivos.forEach(arquivo => {
+                const ativo = arquivo === arquivoAtual ? 'ativo' : '';
+                html += `
+                    <div class="arquivo-item ${ativo}" onclick="abrirArquivo('${arquivo}')">
+                        📄 ${arquivo}
+                    </div>
+                `;
+            });
+            
+            document.getElementById('listaArquivos').innerHTML = html;
+            atualizarStatus(`${arquivos.length} arquivos carregados`, 'conectado');
+            
+            // Auto-carregar treino.txt se disponível
+            if (arquivos.includes('treino.txt') && !arquivoAtual) {
+                abrirArquivo('treino.txt');
+            }
+        });
+        
+        function abrirArquivo(nome) {
+            arquivoAtual = nome;
+            document.getElementById('nomeArquivo').textContent = `Editando: ${nome}`;
+            
+            // Destacar arquivo selecionado
+            document.querySelectorAll('.arquivo-item').forEach(item => {
+                item.classList.remove('ativo');
+                if (item.textContent.includes(nome)) {
+                    item.classList.add('ativo');
+                }
+            });
+            
+            atualizarStatus(`Carregando ${nome}...`, 'conectado');
+            socket.emit('carregar_arquivo', { nome: nome });
+        }
+        
+        socket.on('conteudo_arquivo', (data) => {
+            console.log(`📄 Conteúdo recebido: ${data.nome}`);
+            document.getElementById('editorTexto').value = data.conteudo;
+            atualizarStatus(`${data.nome} carregado (${data.conteudo.length} caracteres)`, 'conectado');
+        });
+        
+        socket.on('erro_arquivo', (erro) => {
+            console.error('❌ Erro ao carregar arquivo:', erro);
+            atualizarStatus('Erro: ' + erro, 'erro');
+        });
+        
+        function salvarArquivo() {
+            if (!arquivoAtual) {
+                alert('Selecione um arquivo primeiro!');
+                return;
+            }
+            
+            const conteudo = document.getElementById('editorTexto').value;
+            atualizarStatus('Salvando...', 'conectado');
+            
+            socket.emit('salvar_arquivo', {
+                nome: arquivoAtual,
+                conteudo: conteudo
+            });
+        }
+        
+        socket.on('arquivo_salvo', (data) => {
+            console.log('✅ Arquivo salvo:', data.nome);
+            atualizarStatus(`${data.nome} salvo com sucesso!`, 'conectado');
+            
+            // Feedback visual
+            const status = document.getElementById('status');
+            status.style.background = '#d4edda';
+            status.style.color = '#155724';
+            setTimeout(() => {
+                status.style.background = '';
+                status.style.color = '';
+            }, 2000);
+        });
+        
+        socket.on('erro_salvar', (erro) => {
+            console.error('❌ Erro ao salvar:', erro);
+            atualizarStatus('Erro ao salvar: ' + erro, 'erro');
+            alert('Erro ao salvar: ' + erro);
+        });
+        
+        // ======================
+        // FUNÇÕES AUXILIARES
+        // ======================
+        function atualizarStatus(mensagem, tipo) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = mensagem;
+            statusDiv.className = 'status ' + (tipo || 'conectado');
+            console.log('📢 Status:', mensagem);
+        }
+        
+        // Log de eventos no console
+        socket.on('disconnect', () => {
+            atualizarStatus('Desconectado do servidor', 'erro');
+        });
+        
+        socket.on('connect_error', () => {
+            atualizarStatus('Erro de conexão com o servidor', 'erro');
+        });
+    </script>
+</body>
+</html>
