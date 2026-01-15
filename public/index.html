@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>WhatsAlvorada</title>
-    <script src="/socket.io/socket.io.js"></script>
+    <!-- USANDO CDN PARA GARANTIR FUNCIONAMENTO -->
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -397,84 +398,87 @@
         
         /* Botão de fechar no modal */
         .btn-fechar {
-    background: #dc3545;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    cursor: pointer;
-}
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
 
-.btn-fechar:hover {
-    background: #c82333;
-}
-/* CSS para botões do modal de conversas */
-.botoes-modal button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    color: white;
-}
+        .btn-fechar:hover {
+            background: #c82333;
+        }
+        
+        /* CSS para botões do modal de conversas */
+        .botoes-modal button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: white;
+        }
 
-/* Botão Fechar (vermelho) */
-.botoes-modal button:first-child {
-    background: #dc3545;
-}
+        /* Botão Fechar (vermelho) */
+        .botoes-modal button:first-child {
+            background: #dc3545;
+        }
 
-.botoes-modal button:first-child:hover {
-    background: #c82333;
-}
+        .botoes-modal button:first-child:hover {
+            background: #c82333;
+        }
 
-/* Botão Atualizar (verde) */
-.botoes-modal button:nth-child(2) {
-    background: #25D366;
-}
+        /* Botão Atualizar (verde) */
+        .botoes-modal button:nth-child(2) {
+            background: #25D366;
+        }
 
-.botoes-modal button:nth-child(2):hover {
-    background: #1da851;
-}
+        .botoes-modal button:nth-child(2):hover {
+            background: #1da851;
+        }
 
-/* Botão Resetar Estado (cinza) */
-.botoes-modal button:nth-child(3) {
-    background: #6c757d;
-}
+        /* Botão Resetar Estado (cinza) */
+        .botoes-modal button:nth-child(3) {
+            background: #6c757d;
+        }
 
-.botoes-modal button:nth-child(3):hover {
-    background: #5a6268;
-}
+        .botoes-modal button:nth-child(3):hover {
+            background: #5a6268;
+        }
 
-/* Botão Exportar (azul) */
-.botoes-modal button:nth-child(4) {
-    background: #17a2b8;
-}
+        /* Botão Exportar (azul) */
+        .botoes-modal button:nth-child(4) {
+            background: #17a2b8;
+        }
 
-.botoes-modal button:nth-child(4):hover {
-    background: #138496;
-}
+        .botoes-modal button:nth-child(4):hover {
+            background: #138496;
+        }
 
-/* Botão Limpar Histórico (vermelho escuro) */
-.botoes-modal button:last-child {
-    background: #c82333;
-}
+        /* Botão Limpar Histórico (vermelho escuro) */
+        .botoes-modal button:last-child {
+            background: #c82333;
+        }
 
-.botoes-modal button:last-child:hover {
-    background: #bd2130;
-}
+        .botoes-modal button:last-child:hover {
+            background: #bd2130;
+        }
 
-.botoes-modal {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-    flex-wrap: wrap;
-}      .filtro-container button {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-}
+        .botoes-modal {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filtro-container button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
         
         .filtro-container input {
             flex: 1;
@@ -664,38 +668,38 @@
             }
         }
       
-      #agendamentoBox input,
-#agendamentoBox textarea {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 14px;
-    margin-bottom: 15px;
-    box-sizing: border-box;
-}
+        #agendamentoBox input,
+        #agendamentoBox textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
 
-#agendamentoBox input:focus,
-#agendamentoBox textarea:focus {
-    outline: none;
-    border-color: #25D366;
-    box-shadow: 0 0 0 2px rgba(37, 211, 102, 0.1);
-}
+        #agendamentoBox input:focus,
+        #agendamentoBox textarea:focus {
+            outline: none;
+            border-color: #25D366;
+            box-shadow: 0 0 0 2px rgba(37, 211, 102, 0.1);
+        }
 
-#agendamentoBox button {
-    width: 100%;
-    padding: 12px;
-    background: #25D366;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 16px;
-}
+        #agendamentoBox button {
+            width: 100%;
+            padding: 12px;
+            background: #25D366;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
 
-#agendamentoBox button:hover {
-    background: #1da851;
-}
+        #agendamentoBox button:hover {
+            background: #1da851;
+        }
     </style>
 </head>
 <body>
@@ -725,7 +729,7 @@
             💬 Conversas
         </button>
         <button class="menu-btn" onclick="abrirEditorPrompts()">
-            💾Editar Prompts
+            💾 Editar Prompts
         </button>
     </div>
 
@@ -787,16 +791,16 @@
         <div id="agendamentoBox" class="box">
             <h3>Agendar Mensagem</h3>
 
-  <!-- Opção para upload de arquivo -->
-    <div style="margin-bottom: 15px;">
-        <label style="display: block; margin-bottom: 8px; font-weight: bold;">
-            📄 Enviar arquivo TXT com números (opcional)
-        </label>
-        <input type="file" id="arquivoNumeros" accept=".txt" style="width: 100%; padding: 8px;">
-        <small style="color: #666; font-size: 12px;">
-            Arquivo deve conter um número por linha
-        </small>
-    </div>
+            <!-- Opção para upload de arquivo -->
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: bold;">
+                    📄 Enviar arquivo TXT com números (opcional)
+                </label>
+                <input type="file" id="arquivoNumeros" accept=".txt" style="width: 100%; padding: 8px;">
+                <small style="color: #666; font-size: 12px;">
+                    Arquivo deve conter um número por linha
+                </small>
+            </div>
             <input type="text" id="numero" placeholder="Número com DDD (ex: 5511999999999)"><br><br>
             <textarea id="mensagem" rows="5" placeholder="Digite sua mensagem aqui..."></textarea><br><br>
             <input type="datetime-local" id="data"><br><br>
@@ -913,20 +917,346 @@
 </div>
 
 <script>
-const socket = io();
+// VARIÁVEL GLOBAL PARA SOCKET - CORREÇÃO CRÍTICA
+let socket = null;
 
-
-  /* ======================
-   AUTO LOGIN
-====================== */
-
-socket.on('connect', () => {
-    const sessao = localStorage.getItem('sessao_whats');
-    if (sessao) {
-        const { token } = JSON.parse(sessao);
-        socket.emit('validar_sessao', token);
+// Inicializar Socket.IO quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+    // Verificar se Socket.IO está disponível
+    if (typeof io === 'undefined') {
+        console.error('Socket.IO não carregado! Verifique o script no <head>');
+        alert('Erro: Biblioteca Socket.IO não carregada. Recarregue a página.');
+        return;
+    }
+    
+    // Conectar ao servidor
+    try {
+        socket = io();
+        console.log('Socket.IO inicializado com sucesso!');
+        
+        // Configurar event listeners do socket
+        configurarSocketListeners();
+        
+    } catch (error) {
+        console.error('Erro ao conectar com Socket.IO:', error);
+        alert('Erro na conexão com o servidor. Verifique o console.');
     }
 });
+
+/* ======================
+   CONFIGURAÇÃO DOS LISTENERS DO SOCKET
+====================== */
+function configurarSocketListeners() {
+    if (!socket) {
+        console.error('Socket não inicializado!');
+        return;
+    }
+    
+    /* ======================
+       AUTO LOGIN
+    ====================== */
+    socket.on('connect', () => {
+        console.log('✅ Conectado ao servidor! ID:', socket.id);
+        const sessao = localStorage.getItem('sessao_whats');
+        if (sessao) {
+            try {
+                const { token } = JSON.parse(sessao);
+                socket.emit('validar_sessao', token);
+            } catch (e) {
+                console.error('Erro ao analisar sessão:', e);
+                localStorage.removeItem('sessao_whats');
+            }
+        }
+    });
+
+    socket.on('connect_error', (error) => {
+        console.error('❌ Erro de conexão:', error);
+    });
+
+    /* ======================
+       LOGIN
+    ====================== */
+    socket.on('login_ok', (dados) => {
+        // Salvar sessão
+        localStorage.setItem('sessao_whats', JSON.stringify(dados));
+        
+        // Mostrar QR Code
+        document.getElementById('loginBox').style.display = 'none';
+        document.getElementById('qrBox').style.display = 'block';
+    });
+
+    socket.on('sessao_valida', () => {
+        document.getElementById('loginBox').style.display = 'none';
+        document.getElementById('qrBox').style.display = 'block';
+    });
+
+    socket.on('login_erro', (msg) => {
+        alert('Erro de login: ' + msg);
+    });
+
+    /* ======================
+       WHATSAPP
+    ====================== */
+    socket.on('qr', (qr) => {
+        document.getElementById('qr').innerHTML = `<img src="${qr}">`;
+    });
+
+    socket.on('ready', () => {
+        // Quando WhatsApp estiver pronto, mostrar conteúdo principal
+        document.getElementById('qrBox').style.display = 'none';
+        document.getElementById('contentContainer').style.display = 'block';
+        
+        // Carregar estatísticas iniciais
+        carregarEstatisticasCards();
+    });
+
+    /* ======================
+       PROMPT
+    ====================== */
+    socket.on('prompt_salvo', () => {
+        alert('Prompt salvo com sucesso!');
+        document.getElementById('prompt').value = '';
+    });
+
+    socket.on('prompt_erro', (erro) => {
+        alert('Erro ao salvar prompt: ' + erro);
+    });
+
+    /* ======================
+       ESTATÍSTICAS - CARDS NA TELA
+    ====================== */
+    // Receber lista de conversas e atualizar cards
+    socket.on('conversas_lista', (data) => {
+        if (data && data.conversas) {
+            let abertas = 0;
+            let finalizadas = 0;
+            
+            // Usar o estado salvo para contar abertas vs finalizadas
+            const estadoSalvo = localStorage.getItem('estado_conversas');
+            if (estadoSalvo) {
+                try {
+                    const estado = JSON.parse(estadoSalvo);
+                    if (estado.finalizadasIds && Array.isArray(estado.finalizadasIds)) {
+                        finalizadas = estado.finalizadasIds.length;
+                    }
+                    abertas = data.conversas.length - finalizadas;
+                } catch (e) {
+                    // Em caso de erro, contar com base nos dados
+                    data.conversas.forEach(conversa => {
+                        if (conversa.status === 'finalizada' || conversa.finalizada) {
+                            finalizadas++;
+                        } else {
+                            abertas++;
+                        }
+                    });
+                }
+            } else {
+                // Sem estado salvo, contar com base nos dados
+                data.conversas.forEach(conversa => {
+                    if (conversa.status === 'finalizada' || conversa.finalizada) {
+                        finalizadas++;
+                    } else {
+                        abertas++;
+                    }
+                });
+            }
+            
+            // Atualizar cards
+            document.getElementById('statCardAbertas').textContent = abertas;
+            document.getElementById('statCardFinalizadas').textContent = finalizadas;
+        }
+    });
+
+    // Receber lista de agendamentos e atualizar cards
+    socket.on('agendamentos_lista', (agendamentos) => {
+        if (agendamentos && Array.isArray(agendamentos)) {
+            let totalAgendadas = agendamentos.length;
+            let totalEnviadas = 0;
+            
+            agendamentos.forEach(agendamento => {
+                if (agendamento.status === 'enviado') {
+                    totalEnviadas++;
+                }
+            });
+            
+            // Atualizar cards
+            document.getElementById('statCardAgendadas').textContent = totalAgendadas;
+            document.getElementById('statCardEnviadas').textContent = totalEnviadas;
+        } else {
+            // Se não houver agendamentos
+            document.getElementById('statCardAgendadas').textContent = 0;
+            document.getElementById('statCardEnviadas').textContent = 0;
+        }
+    });
+
+    /* ======================
+       AGENDAMENTOS - MODAL
+    ====================== */
+    // Receber lista de agendamentos
+    socket.on('agendamentos_lista', (agendamentos) => {
+        // Esconder loading
+        if (document.getElementById('modalAgendamentosLoading')) {
+            document.getElementById('modalAgendamentosLoading').style.display = 'none';
+            document.getElementById('modalAgendamentosContent').style.display = 'block';
+        }
+        
+        const listaAgendamentos = document.getElementById('listaAgendamentos');
+        const semAgendamentos = document.getElementById('semAgendamentos');
+        
+        if (!listaAgendamentos) return;
+        
+        // Limpar lista
+        listaAgendamentos.innerHTML = '';
+        
+        if (!agendamentos || agendamentos.length === 0) {
+            if (semAgendamentos) semAgendamentos.style.display = 'block';
+            return;
+        }
+        
+        if (semAgendamentos) semAgendamentos.style.display = 'none';
+        
+        // Criar container para os cards
+        const container = document.createElement('div');
+        container.className = 'agendamentos-container';
+        
+        // Adicionar cada agendamento como card
+        agendamentos.forEach((agendamento, index) => {
+            const dataHora = `${agendamento.data || 'Data não informada'} às ${agendamento.hora || 'Hora não informada'}`;
+            const status = agendamento.status || 'pendente';
+            const statusClass = status === 'enviado' ? 'status-enviado' : 'status-pendente';
+            const statusText = status === 'enviado' ? 'Enviado' : 'Pendente';
+            
+            // Limitar mensagem para preview
+            let mensagemPreview = agendamento.mensagem || 'Sem mensagem';
+            if (mensagemPreview.length > 150) {
+                mensagemPreview = mensagemPreview.substring(0, 150) + '...';
+            }
+            
+            const card = document.createElement('div');
+            card.className = 'agendamento-card';
+            card.innerHTML = `
+                <div class="agendamento-header">
+                    <div class="agendamento-numero">
+                        📱 ${agendamento.numero || 'Número não informado'}
+                    </div>
+                    <span class="${statusClass}">${statusText}</span>
+                </div>
+                
+                <div class="agendamento-datahora">
+                    📅 ${dataHora}
+                </div>
+                
+                <div class="agendamento-mensagem-box">
+                    ${mensagemPreview}
+                </div>
+                
+                <div class="agendamento-footer">
+                    <div class="agendamento-index">
+                        #${index + 1}
+                    </div>
+                    <div style="font-size: 11px; color: #666;">
+                        📄 ${agendamento.arquivo || 'arquivo.txt'}
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(card);
+        });
+        
+        listaAgendamentos.appendChild(container);
+    });
+
+    socket.on('agendamentos_erro', (erro) => {
+        // Esconder loading
+        if (document.getElementById('modalAgendamentosLoading')) {
+            document.getElementById('modalAgendamentosLoading').style.display = 'none';
+            document.getElementById('modalAgendamentosContent').style.display = 'block';
+        }
+        
+        const listaAgendamentos = document.getElementById('listaAgendamentos');
+        if (listaAgendamentos) {
+            listaAgendamentos.innerHTML = 
+                `<p style="color: red; padding: 20px; text-align: center;">Erro ao carregar agendamentos: ${erro}</p>`;
+        }
+    });
+
+    /* ======================
+       CONVERSAS - MODAL (KANBAN COM DRAG AND DROP PERSISTENTE)
+    ====================== */
+    // Receber lista de conversas
+    socket.on('conversas_lista', (data) => {
+        const { conversas } = data;
+        
+        // Salvar conversas globalmente
+        window.todasConversas = conversas;
+        
+        // Esconder loading
+        if (document.getElementById('modalConversasLoading')) {
+            document.getElementById('modalConversasLoading').style.display = 'none';
+            document.getElementById('modalConversasContent').style.display = 'block';
+            document.getElementById('conversasStats').style.display = 'flex';
+        }
+        
+        const semConversas = document.getElementById('semConversas');
+        
+        if (!conversas || conversas.length === 0) {
+            if (semConversas) semConversas.style.display = 'block';
+            if (document.getElementById('conversasStats')) {
+                document.getElementById('conversasStats').style.display = 'none';
+            }
+            if (document.getElementById('listaAbertas')) {
+                document.getElementById('listaAbertas').innerHTML = '';
+            }
+            if (document.getElementById('listaFinalizadas')) {
+                document.getElementById('listaFinalizadas').innerHTML = '';
+            }
+            return;
+        }
+        
+        if (semConversas) semConversas.style.display = 'none';
+        
+        // Aplicar estado salvo ou começar com todas abertas
+        aplicarEstadoSalvo(conversas);
+        
+        // Atualizar estatísticas
+        atualizarEstatisticas();
+        
+        // Renderizar conversas
+        renderizarConversas();
+    });
+
+    // Erro ao carregar conversas
+    socket.on('conversas_erro', (erro) => {
+        if (document.getElementById('modalConversasLoading')) {
+            document.getElementById('modalConversasLoading').style.display = 'none';
+            document.getElementById('modalConversasContent').style.display = 'block';
+        }
+        
+        const semConversas = document.getElementById('semConversas');
+        if (semConversas) {
+            semConversas.style.display = 'block';
+            semConversas.innerHTML = 
+                `<p style="color: red; padding: 20px; text-align: center;">Erro ao carregar conversas: ${erro}</p>`;
+        }
+    });
+
+    // Confirmação de limpeza de conversas
+    socket.on('conversas_limpas', () => {
+        alert('✅ Histórico de conversas limpo com sucesso!');
+        localStorage.removeItem('estado_conversas');
+        if (typeof carregarConversas === 'function') {
+            carregarConversas();
+        }
+        
+        // Atualizar cards de estatísticas
+        document.getElementById('statCardAbertas').textContent = 0;
+        document.getElementById('statCardFinalizadas').textContent = 0;
+    });
+}
+
+/* ======================
+   FUNÇÕES GLOBAIS
+====================== */
 
 function abrirEditorPrompts() {
     window.open('prompts.html', '_blank', 'width=1200,height=700');
@@ -936,6 +1266,11 @@ function abrirEditorPrompts() {
    LOGIN
 ====================== */
 function login() {
+    if (!socket || !socket.connected) {
+        alert('Não conectado ao servidor. Recarregue a página.');
+        return;
+    }
+    
     const usuario = document.getElementById('usuario').value;
     const senha = document.getElementById('senha').value;
     
@@ -945,44 +1280,15 @@ function login() {
     });
 }
 
-socket.on('login_ok', (dados) => {
-    // Salvar sessão
-    localStorage.setItem('sessao_whats', JSON.stringify(dados));
-    
-    // Mostrar QR Code
-    document.getElementById('loginBox').style.display = 'none';
-    document.getElementById('qrBox').style.display = 'block';
-});
-
-socket.on('sessao_valida', () => {
-    document.getElementById('loginBox').style.display = 'none';
-    document.getElementById('qrBox').style.display = 'block';
-});
-
-socket.on('login_erro', (msg) => {
-    alert('Erro de login: ' + msg);
-});
-
-/* ======================
-   WHATSAPP
-====================== */
-socket.on('qr', (qr) => {
-    document.getElementById('qr').innerHTML = `<img src="${qr}">`;
-});
-
-socket.on('ready', () => {
-    // Quando WhatsApp estiver pronto, mostrar conteúdo principal
-    document.getElementById('qrBox').style.display = 'none';
-    document.getElementById('contentContainer').style.display = 'block';
-    
-    // Carregar estatísticas iniciais
-    carregarEstatisticasCards();
-});
-
 /* ======================
    PROMPT
 ====================== */
 function salvarPrompt() {
+    if (!socket) {
+        alert('Socket não inicializado!');
+        return;
+    }
+    
     const prompt = document.getElementById('prompt').value.trim();
     if (!prompt) {
         alert('Digite um prompt para salvar!');
@@ -992,21 +1298,15 @@ function salvarPrompt() {
     socket.emit('salvar_prompt', { prompt: prompt });
 }
 
-socket.on('prompt_salvo', () => {
-    alert('Prompt salvo com sucesso!');
-    document.getElementById('prompt').value = '';
-});
-
-socket.on('prompt_erro', (erro) => {
-    alert('Erro ao salvar prompt: ' + erro);
-});
-
-
 /* ======================
    AGENDAMENTO PARA MÚLTIPLOS NÚMEROS (MANUAL OU ARQUIVO)
 ====================== */
-
 function agendar() {
+    if (!socket) {
+        alert('Socket não inicializado!');
+        return;
+    }
+    
     const arquivoInput = document.getElementById('arquivoNumeros');
     const numerosInput = document.getElementById('numero').value.trim();
     const mensagem = document.getElementById('mensagem').value.trim();
@@ -1034,17 +1334,18 @@ function agendar() {
                 return;
             }
 
-           // Validar cada número - VERSÃO CORRIGIDA
-for (let i = 0; i < numerosArray.length; i++) {
-    // REMOVER VÍRGULAS, ESPAÇOS, PONTOS, TRAÇOS, PARÊNTESES
-    numerosArray[i] = numerosArray[i].replace(/\D/g, '');
-    
-    // Agora validar se tem apenas números
-    if (!/^\d+$/.test(numerosArray[i])) {
-        alert(`Número inválido: ${numerosArray[i]}\nUse apenas dígitos.`);
-        return;
-    }
-}
+            // Validar cada número - VERSÃO CORRIGIDA
+            for (let i = 0; i < numerosArray.length; i++) {
+                // REMOVER VÍRGULAS, ESPAÇOS, PONTOS, TRAÇOS, PARÊNTESES
+                numerosArray[i] = numerosArray[i].replace(/\D/g, '');
+                
+                // Agora validar se tem apenas números
+                if (!/^\d+$/.test(numerosArray[i])) {
+                    alert(`Número inválido: ${numerosArray[i]}\nUse apenas dígitos.`);
+                    return;
+                }
+            }
+            
             // Agendar para cada número
             const [data, hora] = dataCompleta.split('T');
             
@@ -1125,6 +1426,11 @@ function processarNumeros(arquivo, numerosInput) {
 
 // Carregar todas as estatísticas
 function carregarEstatisticasCards() {
+    if (!socket) {
+        console.error('Socket não inicializado para carregar estatísticas');
+        return;
+    }
+    
     // Atualizar estatísticas de conversas
     socket.emit('listar_conversas', {
         filtroNumero: '',
@@ -1138,6 +1444,11 @@ function carregarEstatisticasCards() {
 
 // Atualizar estatísticas manualmente
 function atualizarEstatisticasCards() {
+    if (!socket) {
+        alert('Não conectado ao servidor. Recarregue a página.');
+        return;
+    }
+    
     // Mostrar loading nos cards
     document.querySelectorAll('.stat-number').forEach(el => {
         el.textContent = '...';
@@ -1157,76 +1468,17 @@ function atualizarEstatisticasCards() {
     }, 1500);
 }
 
-// Receber lista de conversas e atualizar cards
-socket.on('conversas_lista', (data) => {
-    if (data && data.conversas) {
-        let abertas = 0;
-        let finalizadas = 0;
-        
-        // Usar o estado salvo para contar abertas vs finalizadas
-        const estadoSalvo = localStorage.getItem('estado_conversas');
-        if (estadoSalvo) {
-            try {
-                const estado = JSON.parse(estadoSalvo);
-                if (estado.finalizadasIds && Array.isArray(estado.finalizadasIds)) {
-                    finalizadas = estado.finalizadasIds.length;
-                }
-                abertas = data.conversas.length - finalizadas;
-            } catch (e) {
-                // Em caso de erro, contar com base nos dados
-                data.conversas.forEach(conversa => {
-                    if (conversa.status === 'finalizada' || conversa.finalizada) {
-                        finalizadas++;
-                    } else {
-                        abertas++;
-                    }
-                });
-            }
-        } else {
-            // Sem estado salvo, contar com base nos dados
-            data.conversas.forEach(conversa => {
-                if (conversa.status === 'finalizada' || conversa.finalizada) {
-                    finalizadas++;
-                } else {
-                    abertas++;
-                }
-            });
-        }
-        
-        // Atualizar cards
-        document.getElementById('statCardAbertas').textContent = abertas;
-        document.getElementById('statCardFinalizadas').textContent = finalizadas;
-    }
-});
-
-// Receber lista de agendamentos e atualizar cards
-socket.on('agendamentos_lista', (agendamentos) => {
-    if (agendamentos && Array.isArray(agendamentos)) {
-        let totalAgendadas = agendamentos.length;
-        let totalEnviadas = 0;
-        
-        agendamentos.forEach(agendamento => {
-            if (agendamento.status === 'enviado') {
-                totalEnviadas++;
-            }
-        });
-        
-        // Atualizar cards
-        document.getElementById('statCardAgendadas').textContent = totalAgendadas;
-        document.getElementById('statCardEnviadas').textContent = totalEnviadas;
-    } else {
-        // Se não houver agendamentos
-        document.getElementById('statCardAgendadas').textContent = 0;
-        document.getElementById('statCardEnviadas').textContent = 0;
-    }
-});
-
 /* ======================
    AGENDAMENTOS - MODAL
 ====================== */
 
 // Abrir modal de agendamentos
 function abrirModalAgendamentos() {
+    if (!socket) {
+        alert('Não conectado ao servidor. Recarregue a página.');
+        return;
+    }
+    
     document.getElementById('modalAgendamentos').style.display = 'block';
     carregarAgendamentos();
 }
@@ -1238,6 +1490,11 @@ function fecharModalAgendamentos() {
 
 // Carregar lista de agendamentos
 function carregarAgendamentos() {
+    if (!socket) {
+        alert('Socket não inicializado!');
+        return;
+    }
+    
     // Mostrar loading
     document.getElementById('modalAgendamentosLoading').style.display = 'block';
     document.getElementById('modalAgendamentosContent').style.display = 'none';
@@ -1245,85 +1502,6 @@ function carregarAgendamentos() {
     // Solicitar lista de agendamentos
     socket.emit('listar_agendamentos');
 }
-
-// Receber lista de agendamentos
-socket.on('agendamentos_lista', (agendamentos) => {
-    // Esconder loading
-    document.getElementById('modalAgendamentosLoading').style.display = 'none';
-    document.getElementById('modalAgendamentosContent').style.display = 'block';
-    
-    const listaAgendamentos = document.getElementById('listaAgendamentos');
-    const semAgendamentos = document.getElementById('semAgendamentos');
-    
-    // Limpar lista
-    listaAgendamentos.innerHTML = '';
-    
-    if (!agendamentos || agendamentos.length === 0) {
-        semAgendamentos.style.display = 'block';
-        return;
-    }
-    
-    semAgendamentos.style.display = 'none';
-    
-    // Criar container para os cards
-    const container = document.createElement('div');
-    container.className = 'agendamentos-container';
-    
-    // Adicionar cada agendamento como card
-    agendamentos.forEach((agendamento, index) => {
-        const dataHora = `${agendamento.data || 'Data não informada'} às ${agendamento.hora || 'Hora não informada'}`;
-        const status = agendamento.status || 'pendente';
-        const statusClass = status === 'enviado' ? 'status-enviado' : 'status-pendente';
-        const statusText = status === 'enviado' ? 'Enviado' : 'Pendente';
-        
-        // Limitar mensagem para preview
-        let mensagemPreview = agendamento.mensagem || 'Sem mensagem';
-        if (mensagemPreview.length > 150) {
-            mensagemPreview = mensagemPreview.substring(0, 150) + '...';
-        }
-        
-        const card = document.createElement('div');
-        card.className = 'agendamento-card';
-        card.innerHTML = `
-            <div class="agendamento-header">
-                <div class="agendamento-numero">
-                    📱 ${agendamento.numero || 'Número não informado'}
-                </div>
-                <span class="${statusClass}">${statusText}</span>
-            </div>
-            
-            <div class="agendamento-datahora">
-                📅 ${dataHora}
-            </div>
-            
-            <div class="agendamento-mensagem-box">
-                ${mensagemPreview}
-            </div>
-            
-            <div class="agendamento-footer">
-                <div class="agendamento-index">
-                    #${index + 1}
-                </div>
-                <div style="font-size: 11px; color: #666;">
-                    📄 ${agendamento.arquivo || 'arquivo.txt'}
-                </div>
-            </div>
-        `;
-        
-        container.appendChild(card);
-    });
-    
-    listaAgendamentos.appendChild(container);
-});
-
-socket.on('agendamentos_erro', (erro) => {
-    // Esconder loading
-    document.getElementById('modalAgendamentosLoading').style.display = 'none';
-    document.getElementById('modalAgendamentosContent').style.display = 'block';
-    
-    document.getElementById('listaAgendamentos').innerHTML = 
-        `<p style="color: red; padding: 20px; text-align: center;">Erro ao carregar agendamentos: ${erro}</p>`;
-});
 
 /* ======================
    CONVERSAS - MODAL (KANBAN COM DRAG AND DROP PERSISTENTE)
@@ -1337,6 +1515,11 @@ let conversaArrastrada = null;
 
 // Abrir modal de conversas
 function abrirModalConversas() {
+    if (!socket) {
+        alert('Não conectado ao servidor. Recarregue a página.');
+        return;
+    }
+    
     document.getElementById('modalConversas').style.display = 'block';
     carregarConversas();
 }
@@ -1348,6 +1531,11 @@ function fecharModalConversas() {
 
 // Carregar lista de conversas
 function carregarConversas() {
+    if (!socket) {
+        alert('Socket não inicializado!');
+        return;
+    }
+    
     // Mostrar loading
     document.getElementById('modalConversasLoading').style.display = 'block';
     document.getElementById('modalConversasContent').style.display = 'none';
@@ -1371,40 +1559,6 @@ function limparFiltrosConversas() {
     document.getElementById('filtroLimite').value = '50';
     carregarConversas();
 }
-
-// Receber lista de conversas
-socket.on('conversas_lista', (data) => {
-    const { conversas } = data;
-    
-    // Salvar conversas globalmente
-    todasConversas = conversas;
-    
-    // Esconder loading
-    document.getElementById('modalConversasLoading').style.display = 'none';
-    document.getElementById('modalConversasContent').style.display = 'block';
-    document.getElementById('conversasStats').style.display = 'flex';
-    
-    const semConversas = document.getElementById('semConversas');
-    
-    if (!conversas || conversas.length === 0) {
-        semConversas.style.display = 'block';
-        document.getElementById('conversasStats').style.display = 'none';
-        document.getElementById('listaAbertas').innerHTML = '';
-        document.getElementById('listaFinalizadas').innerHTML = '';
-        return;
-    }
-    
-    semConversas.style.display = 'none';
-    
-    // Aplicar estado salvo ou começar com todas abertas
-    aplicarEstadoSalvo(conversas);
-    
-    // Atualizar estatísticas
-    atualizarEstatisticas();
-    
-    // Renderizar conversas
-    renderizarConversas();
-});
 
 // Função para gerar ID único baseado nos dados da conversa
 function gerarIdConversa(conversa) {
@@ -1501,6 +1655,8 @@ function atualizarEstatisticas() {
 function renderizarConversas() {
     const listaAbertas = document.getElementById('listaAbertas');
     const listaFinalizadas = document.getElementById('listaFinalizadas');
+    
+    if (!listaAbertas || !listaFinalizadas) return;
     
     // Limpar listas
     listaAbertas.innerHTML = '';
@@ -1627,8 +1783,11 @@ function soltarConversa(event) {
     salvarEstadoConversas();
     
     // Atualizar cards de estatísticas na tela principal
-    document.getElementById('statCardAbertas').textContent = conversasAbertas.length;
-    document.getElementById('statCardFinalizadas').textContent = conversasFinalizadas.length;
+    const statCardAbertas = document.getElementById('statCardAbertas');
+    const statCardFinalizadas = document.getElementById('statCardFinalizadas');
+    
+    if (statCardAbertas) statCardAbertas.textContent = conversasAbertas.length;
+    if (statCardFinalizadas) statCardFinalizadas.textContent = conversasFinalizadas.length;
     
     conversaArrastrada = null;
 }
@@ -1657,25 +1816,23 @@ function limparEstadoConversas() {
         renderizarConversas();
         
         // Atualizar cards de estatísticas
-        document.getElementById('statCardAbertas').textContent = conversasAbertas.length;
-        document.getElementById('statCardFinalizadas').textContent = 0;
+        const statCardAbertas = document.getElementById('statCardAbertas');
+        const statCardFinalizadas = document.getElementById('statCardFinalizadas');
+        
+        if (statCardAbertas) statCardAbertas.textContent = conversasAbertas.length;
+        if (statCardFinalizadas) statCardFinalizadas.textContent = 0;
         
         alert('Estado das conversas resetado!');
     }
 }
 
-// Erro ao carregar conversas
-socket.on('conversas_erro', (erro) => {
-    document.getElementById('modalConversasLoading').style.display = 'none';
-    document.getElementById('modalConversasContent').style.display = 'block';
-    
-    document.getElementById('semConversas').style.display = 'block';
-    document.getElementById('semConversas').innerHTML = 
-        `<p style="color: red; padding: 20px; text-align: center;">Erro ao carregar conversas: ${erro}</p>`;
-});
-
 // Exportar conversas
 function exportarConversas() {
+    if (!socket) {
+        alert('Socket não inicializado!');
+        return;
+    }
+    
     const filtroNumero = document.getElementById('filtroNumero').value;
     const limite = document.getElementById('filtroLimite').value;
     
@@ -1713,21 +1870,15 @@ function exportarConversas() {
 
 // Limpar histórico de conversas
 function limparConversas() {
+    if (!socket) {
+        alert('Socket não inicializado!');
+        return;
+    }
+    
     if (confirm('⚠️ ATENÇÃO!\n\nIsso apagará TODAS as conversas salvas no servidor.\n\nTem certeza que deseja continuar?')) {
         socket.emit('limpar_conversas');
     }
 }
-
-// Confirmação de limpeza de conversas
-socket.on('conversas_limpas', () => {
-    alert('✅ Histórico de conversas limpo com sucesso!');
-    localStorage.removeItem('estado_conversas');
-    carregarConversas();
-    
-    // Atualizar cards de estatísticas
-    document.getElementById('statCardAbertas').textContent = 0;
-    document.getElementById('statCardFinalizadas').textContent = 0;
-});
 
 /* ======================
    FECHAR MODAL AO CLICAR FORA
